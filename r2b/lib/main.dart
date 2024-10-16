@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:r2b/models/cards/reply.dart';
 import 'package:r2b/models/question.dart';
+import 'package:r2b/models/cards/quiz.dart';
+import 'package:provider/provider.dart';
 import 'dart:math';
 
 void main() {
@@ -11,10 +14,13 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'R2B',
-      home: const MyHomePage(title: 'Math Quiz'),
-      debugShowCheckedModeBanner: false,
+    return ChangeNotifierProvider(
+      create: (context) => QuestionModel(),
+      child: const MaterialApp(
+        title: 'R2B',
+        home: MyHomePage(title: 'Math Quiz'),
+        debugShowCheckedModeBanner: false,
+      ),
     );
   }
 }
@@ -30,10 +36,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   final TextEditingController _textController = TextEditingController();
-  final List<Question> questions = [
-    Question(question: "Combien font 3x2", reponse: 6),
-    Question(question: "Combien font 4x2", reponse: 8)
-  ];
+  final questions = QuestionModel().questionsList;
   // Fonction pour obtenir une question aléatoire
   Question getQuestion() {
     final random = Random();
@@ -81,52 +84,8 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            ConstrainedBox(
-              constraints: BoxConstraints(
-                minWidth: 200,
-                maxWidth:
-                    max(200, min(600, MediaQuery.of(context).size.width * 0.8)),
-              ),
-              child: Card(
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Center(
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: Text(
-                            currentQuestion.question,
-                            textAlign: TextAlign.center,
-                            textScaler: const TextScaler.linear(2.0),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            Card(
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Row(
-                  children: [
-                    Text('Votre réponse :'),
-                    SizedBox(width: 16),
-                    Expanded(
-                      child: TextField(
-                        decoration: InputDecoration(
-                          border: OutlineInputBorder(),
-                          hintText: 'Entrez votre réponse',
-                        ),
-                        controller: _reponseController,
-                        keyboardType: TextInputType.number,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
+            QuizCard(currentQuestion: currentQuestion),
+            Response(reponseController: _reponseController),
             ElevatedButton(
               onPressed: _checkAnswer,
               child: const Text('Vérifier'),
