@@ -56,15 +56,17 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void getNewQuestion() {
+    final random = Random();
+    final difficulty = random.nextInt(11); // 0 to 10
     setState(() {
-      currentQuestion = getQuestion();
+      currentQuestion = MultiplicationQuestion(difficulty);
     });
     _textController.clear();
     _message = '';
   }
 
   void _checkAnswer() {
-    int userAnswer = int.tryParse(_reponseController.text) ?? 0;
+    String userAnswer = _reponseController.text;
     setState(() {
       _message =
           userAnswer == currentQuestion.reponse ? 'Correct !' : 'Incorrect !';
